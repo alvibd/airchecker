@@ -12,3 +12,4 @@ Easy Installation
 - cd to project directory: `$ cd airchecker`
 - install dependancies: `$ npm install`
 - run server: `$ npm run dev`
+- go to `localhost:8080`
