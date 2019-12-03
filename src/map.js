@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import axios from 'axios'
+import moment from 'moment'
 import ReactDOM from 'react-dom'
 import {
 	withScriptjs,
 	withGoogleMap,
 	GoogleMap,
-	Marker,
+    Marker,
 } from "react-google-maps"
 
 export default class Map extends Component{
@@ -13,9 +15,13 @@ export default class Map extends Component{
     constructor(props)
     {
         super(props);
-        this.state = {
-            pos : {}
-        }
+			this.state = {
+				base_url : 'https://api.openaq.org/v1/',
+				date: moment().format('YYYY-M-DD'),
+                pos: {},
+                results: [],
+                // handleShow: this.show.bind(this),
+			}
     }
     
     initialPosition()
@@ -40,15 +46,67 @@ export default class Map extends Component{
             handleLocationError(false, infoWindow, map.getCenter());
         }
 
-        // console.log(this.state.position);
+    
 
-        return this.state.pos;
+        // return this.state.pos;
     }
 
-    componentDidMount()
+    componentWillMount()
     {
         this.initialPosition();
         // console.log(infoWindow);
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        // console.log(prevProps);
+        if(this.state.pos != prevState.pos)
+        {
+            this.airQuality();
+        }
+    
+    }
+
+    airQuality()
+    {
+        // console.log(this.state.pos);
+
+        let data = {
+            'coordinates': this.state.pos.lat+", "+this.state.pos.lng,
+            'radius' : 10000,
+            'date_from': this.state.date,
+            'date_to': this.state.date
+        }
+        let results = [];
+        axios.get(this.state.base_url+'measurements', {params: data}).then(response => {
+            // console.log(response.data.results);
+            this.setState((state, props) => ({
+                results : response.data.results
+              }));
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    markers()
+    {
+        const results = this.state.results;
+
+        console.log(results);
+        const markers = results.map( (marker, index) => 
+            (<Marker 
+                key={index} 
+                position={{lat: marker.coordinates.latitude, lng: marker.coordinates.longitude}}
+                label={"Air quality index: "+marker.value}
+                onClick={(e) => this.show(marker.value, e)}
+            />)
+        );
+        
+        return markers;
+    }
+
+    show(value)
+    {
+        alert("Air pollution level: "+value);
     }
     
     render(){
@@ -58,17 +116,16 @@ export default class Map extends Component{
             containerElement={<div style={{ height: `400px` }} />}
             mapElement={<div style={{ height: `100%` }} />}
             position={ this.state.pos }
+            markers= {this.markers()}
             />);
     }
 }
 
 const MapWithAMarker = withScriptjs(withGoogleMap(props =>
     <GoogleMap
-    defaultZoom={18}
+    defaultZoom={8}
     defaultCenter={ props.position }
     >
-    <Marker
-    position={props.position}
-    />
+    {props.markers}
     </GoogleMap>
     ));

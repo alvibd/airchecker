@@ -17,26 +17,26 @@ const styles = {
 		constructor(props)
 		{
 			super(props);
-			this.state = {
-				base_url : 'https://api.openaq.org/v1/',
-				date: moment().format('YYYY-M-DD'),
-				pos: {}
-			}
+			// this.state = {
+			// 	base_url : 'https://api.openaq.org/v1/',
+			// 	date: moment().format('YYYY-M-DD'),
+			// 	pos: {}
+			// }
 		}
 		
 		componentDidMount()
 		{
-			let data = {
-				'coordinates': "23.7197845,90.4211198",
-				'radius' : 10000,
-				'date_from': this.state.date,
-				'date_to': this.state.date
-			}
-			axios.get(this.state.base_url+'measurements', {params: data}).then(response => {
-				console.log(response.data.results);
-			}).catch(function (error) {
-				console.log(error);
-			});
+			// let data = {
+			// 	'coordinates': "23.7197845,90.4211198",
+			// 	'radius' : 10000,
+			// 	'date_from': this.state.date,
+			// 	'date_to': this.state.date
+			// }
+			// axios.get(this.state.base_url+'measurements', {params: data}).then(response => {
+			// 	console.log(response.data.results);
+			// }).catch(function (error) {
+			// 	console.log(error);
+			// });
 		}
 		
 		
